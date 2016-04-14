@@ -4,12 +4,12 @@
 #include <stdio.h>
 
 #define BLOCK_SIZE 16
-#define unsigned int ul
 #define N 100
+typedef unsigned int ul;
 
-void printMat(ul a[][]);
+void printMat(ul a[N][N]);
 
-void multiplyMatrixHost(ul a[][], ul b[][], ul c[][]);
+void multiplyMatrixHost(const ul a[N][N], const ul b[N][N], ul c[N][N]);
 
 /**
  * Device code for matrix multiplication
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
  * Host code for matrix multiplication.
  * Multiplies 'a' and 'b' and stores it in 'c'
  */
-void multiplyMatrixHost(const ul a[][], const ul b[][], ul c[][]) {
+void multiplyMatrixHost(const ul a[N][N], const ul b[N][N], ul c[N][N]) {
     ul *dA, dB, dC;
 
     //Allocate memory for arrays on device memory
@@ -68,7 +68,7 @@ void multiplyMatrixHost(const ul a[][], const ul b[][], ul c[][]) {
     multiplyMatrixDevice << dimGrid, dimBlock >> (dA, dB, dC);
     cudaThreadSynchronize();
     cudaMemcpy(c, dC, N * N * sizeof(ul), cudaMemcpyDeviceToHost);
-    print(c);
+    printMat(c);
 
     cudaFree(dA);
     cudaFree(dB);
@@ -78,7 +78,7 @@ void multiplyMatrixHost(const ul a[][], const ul b[][], ul c[][]) {
 /**
  * Prints the given matrix
  */
-void printMat(ul a[][]) {
+void printMat(ul a[N][N]) {
     printf("--------------------MATRIX PRINT START-------------------\n");
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
