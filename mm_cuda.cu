@@ -108,7 +108,7 @@ void printMat(ul a[N][N]) {
     printf("--------------------MATRIX PRINT START-------------------\n");
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            printf("%d ", a[i][j]);
+            printf("%u ", a[i][j]);
         }
         printf("\n");
     }
