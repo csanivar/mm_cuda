@@ -72,6 +72,7 @@ void multiplyMatrixHost(const ul a[][], const ul b[][], ul c[][]) {
 
     cudaFree(dA);
     cudaFree(dB);
+    cudaFree(dC);
 }
 
 /**
