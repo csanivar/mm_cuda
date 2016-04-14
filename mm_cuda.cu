@@ -5,6 +5,7 @@
 
 #define BLOCK_SIZE 16
 #define unsigned int ul
+#define N 100
 
 void printMat(ul a[][]);
 
@@ -29,7 +30,6 @@ __global__ void multiplyMatrixDevice(ul* dA, ul* dB, ul* dC) {
 }
 
 int main(int argc, char *argv[]) {
-    int N = 100;
     ul a[N][N];
     ul b[N][N];
     ul c[N][N];
