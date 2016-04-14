@@ -23,7 +23,7 @@ __global__ void multiplyMatrixDevice(ul dA[][], ul dB[][], ul dC[][]) {
     }
 
     for (int i = 0; i < N; i++) {
-        val += dA[row, i] * dB[i, col];
+        val += dA[row * N + i] * dB[i * N + col];
     }
     dC[row, col] = val;
 }
