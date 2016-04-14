@@ -2,14 +2,29 @@
 // Created by mouli on 4/14/16.
 //
 #include <stdio.h>
+#include "device_launch_parameters.h"
+#include "cuda.h"
+#include "cuda_runtime.h"
+#include "cuda_device_runtime_api.h"
 
 #define BLOCK_SIZE 16
 #define N 100
+#define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 typedef unsigned int ul;
 
 void printMat(ul a[N][N]);
 
 void multiplyMatrixHost(const ul a[N][N], const ul b[N][N], ul c[N][N]);
+
+static void HandleError( cudaError_t err,
+                         const char *file,
+                         int line ) {
+    if (err != cudaSuccess) {
+        printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
+                file, line );
+        exit( EXIT_FAILURE );
+    }
+}
 
 /**
  * Device code for matrix multiplication
@@ -41,8 +56,17 @@ int main(int argc, char *argv[]) {
             c[i][j] = 0;
         }
     }
+    float time;
+    cudaEvent_t start, stop;
 
+    HANDLE_ERROR( cudaEventCreate(&start) );
+    HANDLE_ERROR( cudaEventCreate(&stop) );
+    HANDLE_ERROR( cudaEventRecord(start, 0) );
     multiplyMatrixHost(a, b, c);
+    HANDLE_ERROR( cudaEventRecord(stop, 0) );
+    HANDLE_ERROR( cudaEventSynchronize(stop) );
+    HANDLE_ERROR( cudaEventElapsedTime(&time, start, stop) );
+    printf("Time to generate:  %f ms \n", time);
 }
 
 /**
@@ -84,7 +108,7 @@ void printMat(ul a[N][N]) {
     printf("--------------------MATRIX PRINT START-------------------\n");
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            printf("%f ", a[i][j]);
+            printf("%d ", a[i][j]);
         }
         printf("\n");
     }
