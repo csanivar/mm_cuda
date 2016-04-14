@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #define BLOCK_SIZE 16
-#define unsigned long ul
+#define unsigned int ul
 
 void printMat(ul a[][]);
 
@@ -13,7 +13,7 @@ void multiplyMatrixHost(ul a[][], ul b[][], ul c[][]);
 /**
  * Device code for matrix multiplication
  */
-__global__ void multiplyMatrixDevice(ul dA[][], ul dB[][], ul dC[][]) {
+__global__ void multiplyMatrixDevice(ul* dA, ul* dB, ul* dC) {
     ul val = 0;
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
