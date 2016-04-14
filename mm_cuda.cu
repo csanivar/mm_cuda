@@ -67,7 +67,7 @@ void multiplyMatrixHost(const ul a[N][N], const ul b[N][N], ul c[N][N]) {
     dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 dimGrid(N + dimBlock.x - 1 / dimBlock.x, N + dimBlock.y - 1 / dimBlock.y);
 
-    multiplyMatrixDevice<<dimGrid, dimBlock>>(dA, dB, dC);
+    multiplyMatrixDevice<<<dimGrid, dimBlock>>>(dA, dB, dC);
     cudaThreadSynchronize();
     cudaMemcpy(c, dC, N * N * sizeof(ul), cudaMemcpyDeviceToHost);
     printMat(c);
