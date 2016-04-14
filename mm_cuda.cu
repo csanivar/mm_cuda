@@ -50,12 +50,14 @@ int main(int argc, char *argv[]) {
  * Multiplies 'a' and 'b' and stores it in 'c'
  */
 void multiplyMatrixHost(const ul a[N][N], const ul b[N][N], ul c[N][N]) {
-    ul *dA, dB, dC;
+    ul* dA;
+    ul* dB;
+    ul* dC;
 
     //Allocate memory for arrays on device memory
-    cudaMalloc((void **) &dA, N * N * sizeof(ul));
-    cudaMalloc((void **) &dB, N * N * sizeof(ul));
-    cudaMalloc((void **) &dC, N * N * sizeof(ul));
+    cudaMalloc((void**) &dA, N * N * sizeof(ul));
+    cudaMalloc((void**) &dB, N * N * sizeof(ul));
+    cudaMalloc((void**) &dC, N * N * sizeof(ul));
 
     //Copy host arrays to device memory
     cudaMemcpy(dA, a, N * N * sizeof(ul), cudaMemcpyHostToDevice);
@@ -65,7 +67,7 @@ void multiplyMatrixHost(const ul a[N][N], const ul b[N][N], ul c[N][N]) {
     dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 dimGrid(N + dimBlock.x - 1 / dimBlock.x, N + dimBlock.y - 1 / dimBlock.y);
 
-    multiplyMatrixDevice << dimGrid, dimBlock >> (dA, dB, dC);
+    multiplyMatrixDevice<<dimGrid, dimBlock>>(dA, dB, dC);
     cudaThreadSynchronize();
     cudaMemcpy(c, dC, N * N * sizeof(ul), cudaMemcpyDeviceToHost);
     printMat(c);
