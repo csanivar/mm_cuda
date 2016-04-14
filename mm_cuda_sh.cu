@@ -3,12 +3,12 @@
 //
 #include <stdio.h>
 
+typedef unsigned long ul;
 #define BLOCK_SIZE 16
-#define unsigned long ul
+#define N 100
+void printMat(ul a[N][N]);
 
-void printMat(ul a[][]);
-
-void multiplyMatrixHost(ul a[][], ul b[][], ul c[][]);
+void multiplyMatrixHost(ul a[N][N], ul b[N][N], ul c[N][N]);
 
 /**
  * Get a matrix element (Device code)
@@ -33,7 +33,7 @@ __device__ getSubMatrix(ul* dA, int row, int col) {
 /**
  * Device code for matrix multiplication
  */
-__global__ void multiplyMatrixDevice(ul dA[][], ul dB[][], ul dC[][]) {
+__global__ void multiplyMatrixDevice(ul* dA, ul* dB, ul* dC) {
     int blockRow = blockIdx.x;
     int blockCol = blockIdx.y;
 
@@ -60,7 +60,6 @@ __global__ void multiplyMatrixDevice(ul dA[][], ul dB[][], ul dC[][]) {
 }
 
 int main(int argc, char *argv[]) {
-    int N = 100;
     ul a[N][N];
     ul b[N][N];
     ul c[N][N];
@@ -80,8 +79,10 @@ int main(int argc, char *argv[]) {
  * Host code for matrix multiplication.
  * Multiplies 'a' and 'b' and stores it in 'c'
  */
-void multiplyMatrixHost(const ul a[][], const ul b[][], ul c[][]) {
-    ul *dA, dB, dC;
+void multiplyMatrixHost(const ul a[N][N], const ul b[N][N], ul c[N][N]) {
+    ul* dA;
+    ul* dB;
+    ul* dC;
 
     //Allocate memory for arrays on device memory
     cudaMalloc((void **) &dA, N * N * sizeof(ul));
@@ -96,7 +97,7 @@ void multiplyMatrixHost(const ul a[][], const ul b[][], ul c[][]) {
     dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 dimGrid(N / dimBlock.x, N / dimBlock.y);
 
-    multiplyMatrixDevice << dimGrid, dimBlock >> (dA, dB, dC);
+    multiplyMatrixDevice<<dimGrid, dimBlock>>(dA, dB, dC);
     cudaThreadSynchronize();
     cudaMemcpy(c, dC, N * N * sizeof(ul), cudaMemcpyDeviceToHost);
     print(c);
@@ -109,7 +110,7 @@ void multiplyMatrixHost(const ul a[][], const ul b[][], ul c[][]) {
 /**
  * Prints the given matrix
  */
-void printMat(ul a[][]) {
+void printMat(ul a[N][N]) {
     printf("--------------------MATRIX PRINT START-------------------\n");
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
