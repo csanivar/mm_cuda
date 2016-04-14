@@ -7,7 +7,7 @@
 #include "cuda_runtime.h"
 #include "cuda_device_runtime_api.h"
 
-#define BLOCK_SIZE 16
+#define BLOCK_SIZE 50
 #define N 100
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 typedef unsigned int ul;
@@ -31,8 +31,8 @@ static void HandleError( cudaError_t err,
  */
 __global__ void multiplyMatrixDevice(ul* dA, ul* dB, ul* dC) {
     ul val = 0;
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * BLOCK_SIZE + threadIdx.y;
+    int col = blockIdx.x * BLOCK_SIZE + threadIdx.x;
 
     if (row > N || col > N) {
         return;
